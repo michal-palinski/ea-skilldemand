@@ -37,6 +37,21 @@ include-in-header:
         margin-bottom: 1.2rem;
       }
 
+      #title-block-header .title {
+        font-size: clamp(2.4rem, 4.2vw, 3.35rem);
+        line-height: 1.06;
+        letter-spacing: -0.03em;
+        color: var(--ink-strong);
+      }
+
+      #title-block-header .subtitle,
+      #title-block-header p.subtitle {
+        font-size: clamp(1.25rem, 2vw, 1.55rem);
+        line-height: 1.2;
+        color: #475569;
+        margin-top: 0.45rem;
+      }
+
       .report-eyebrow {
         display: block;
         color: #94a3b8;
@@ -202,6 +217,25 @@ include-in-header:
       .source-link-ext {
         color: #7fb0d8;
         font-size: 0.9em;
+      }
+
+      .paper-link {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.28rem;
+        color: #0f6cbd;
+        font-weight: 700;
+        line-height: 1.25;
+        text-decoration: none;
+        border-bottom: 2px solid rgba(15, 108, 189, 0.28);
+        padding-bottom: 0.02rem;
+        transition: color 120ms ease, border-color 120ms ease;
+      }
+
+      .paper-link:hover,
+      .paper-link:focus {
+        color: #0a5aa0;
+        border-bottom-color: rgba(10, 90, 160, 0.5);
       }
 
       .modal-link-btn {
@@ -497,7 +531,6 @@ include-in-header:
       .compare-helper {
         font-size: 0.78rem;
         color: #94a3b8;
-        margin-top: 0.35rem;
       }
 
       .compare-note {
@@ -510,6 +543,38 @@ include-in-header:
         display: grid;
         grid-template-columns: 1fr;
         gap: 1rem;
+      }
+
+      .compare-panel-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--ink-strong);
+        margin: 0.2rem 0 0.45rem 0;
+      }
+
+      .keyness-meta {
+        font-size: 0.84rem;
+        color: #64748b;
+        margin: 0.15rem 0 0.95rem 0;
+      }
+
+      .keyness-table-wrap {
+        overflow-x: auto;
+      }
+
+      .keyness-table td,
+      .keyness-table th {
+        white-space: nowrap;
+      }
+
+      .keyness-table td:first-child,
+      .keyness-table th:first-child {
+        white-space: normal;
+      }
+
+      .keyness-code {
+        color: #94a3b8;
+        font-weight: 700;
       }
 
       @media (max-width: 680px) {
@@ -565,12 +630,23 @@ include-in-header:
 ::: {.hero}
 ## Executive Summary
 
-This report examines skill demand patterns across East and Southeast Asian
-labour markets using large-scale data from online job advertisements.
-By combining automated translation, sentence-level skill filtering,
-and taxonomy mapping to the European Skills, Competences, Qualifications
-and Occupations (ESCO) framework, we provide a cross-country comparison
-of employer skill requirements.
+This report analyses labour demand in East and Southeast Asia through
+the lens of online job advertisements, with a focus on how employers
+signal required skills across occupations and markets. It combines
+labour-market analysis with modern NLP methods, including automated
+translation, sentence-level classification, and LLM-assisted skill
+extraction, to turn unstructured vacancy text into comparable measures
+of skill demand.
+
+Using ESCO-based mappings, the report compares the composition of
+requested skills and knowledge areas across countries, with special
+focus on digital competencies and indicators of relative labour demand
+derived from job posting intensity. Labour markets across East Asia are
+undergoing
+rapid transformation, with increasing digitization reshaping how
+employers search for talent. Online job postings (OJPs) provide a useful
+proxy for real-time labour demand, particularly for mid- and high-skill
+occupations.
 :::
 
 ```{=html}
@@ -1225,7 +1301,7 @@ economic activity codes.
 ::: {.callout-note appearance="simple"}
 Our pipeline outperforms the current state of the art by approximately
 3 percentage points in RP@5 on the HOUSE and TECH benchmark datasets
-reported by Decorte et al. (2025). These benchmarks consist of job
+reported by <a class="paper-link" href="https://arxiv.org/html/2505.24640v1" target="_blank" rel="noopener noreferrer">Decorte et al. (2025)<span class="source-link-ext">↗</span></a>. These benchmarks consist of job
 postings annotated with ESCO gold-standard skill labels by human
 experts, against which model predictions are evaluated. The reported
 RP@5 scores are 0.822 and 0.838, respectively.
@@ -1385,9 +1461,6 @@ categoryData = FileAttachment("esco_category_shares.json").json()
   const box = controls.append("div").attr("class", "compare-control");
   box.append("label").text("Select up to 5 countries");
   const buttonGroup = box.append("div").attr("class", "country-button-group");
-  const helper = box.append("div")
-    .attr("class", "compare-helper")
-    .text("Indonesia and Chile remain disabled until ESCO-mapped outputs are available.");
 
   wrap.append("div")
     .attr("class", "compare-note")
@@ -1395,10 +1468,13 @@ categoryData = FileAttachment("esco_category_shares.json").json()
 
   const chartHost = wrap.append("div").attr("class", "compare-charts");
 
-  const shortLabel = (text, n = 44) => text.length > n ? `${text.slice(0, n - 1)}…` : text;
+  const shortLabel = (text, n = 44) => {
+    if (text === "information and communication technologies (icts)") return "ICT";
+    return text.length > n ? `${text.slice(0, n - 1)}…` : text;
+  };
 
-  function drawHeatmap({title, rows, selected, paletteInterpolator}) {
-    const margin = {top: 44, right: 14, bottom: 10, left: 270};
+  function drawHeatmap({rows, selected, paletteInterpolator}) {
+    const margin = {top: 20, right: 14, bottom: 10, left: 270};
     const cellW = 92;
     const cellH = 30;
     const width = margin.left + selected.length * cellW + margin.right;
@@ -1412,14 +1488,6 @@ categoryData = FileAttachment("esco_category_shares.json").json()
       .attr("height", height)
       .style("max-width", "100%")
       .style("height", "auto");
-
-    svg.append("text")
-      .attr("x", margin.left)
-      .attr("y", 22)
-      .attr("font-size", 16)
-      .attr("font-weight", 700)
-      .attr("fill", "#0f172a")
-      .text(title);
 
     selected.forEach((country, i) => {
       svg.append("text")
@@ -1480,7 +1548,6 @@ categoryData = FileAttachment("esco_category_shares.json").json()
   function render() {
     const selected = selectedCountries;
     chartHost.selectAll("*").remove();
-    helper.text(`${selected.length}/5 selected. Indonesia and Chile remain disabled until ESCO-mapped outputs are available.`);
 
     const skillRows = skillCodes.map(code => ({
       code,
@@ -1499,15 +1566,21 @@ categoryData = FileAttachment("esco_category_shares.json").json()
         d3.mean(selected.map(country => a.values[country] || 0))
       );
 
-    chartHost.append(() => drawHeatmap({
-      title: "Most aggregated skill categories",
+    const skillPanel = chartHost.append("div");
+    skillPanel.append("div")
+      .attr("class", "compare-panel-title")
+      .text("Skills");
+    skillPanel.append(() => drawHeatmap({
       rows: skillRows,
       selected,
       paletteInterpolator: t => d3.interpolateRgb("#eff6ff", "#2563eb")(t)
     }));
 
-    chartHost.append(() => drawHeatmap({
-      title: "Most aggregated knowledge categories",
+    const knowledgePanel = chartHost.append("div");
+    knowledgePanel.append("div")
+      .attr("class", "compare-panel-title")
+      .text("Knowledge");
+    knowledgePanel.append(() => drawHeatmap({
       rows: knowledgeRows,
       selected,
       paletteInterpolator: t => d3.interpolateRgb("#fff7ed", "#ea580c")(t)
@@ -1545,12 +1618,16 @@ categoryData = FileAttachment("esco_category_shares.json").json()
 ::: {.section-card}
 ### Digital skills prevalence
 
-Using the digital skill classification from Chinen et al. (2025), we
+Using the digital skill classification from
+<a class="paper-link" href="https://ideas.repec.org/p/wbk/hdgens/203091.html" target="_blank" rel="noopener noreferrer">Angel-Urdinola et al. (2025)<span class="source-link-ext">↗</span></a>, we
 identify ESCO skills associated with **basic**, **intermediate**, and
-**advanced** digital capabilities. Transversal digital skills are
-excluded from this view. The chart reports the share of job postings in
-each country that contain at least one ESCO-mapped digital skill from
-the respective level; shares therefore do not sum to 100%.
+**advanced** digital capabilities. In broad terms, **basic** digital
+skills cover routine use of standard software and digital tools,
+**intermediate** skills include working with specialised business or ICT
+applications, and **advanced** skills refer to tasks such as software
+development, data science, AI, or advanced systems engineering. The
+chart below shows the composition of identified digital skill mentions
+within each country, so the three segments sum to 100% for every bar.
 
 ```{ojs}
 //| echo: false
@@ -1571,17 +1648,14 @@ digitalData = FileAttachment("digital_skill_offer_shares.json").json()
       country: d.country,
       Basic: d.shares.Basic,
       Intermediate: d.shares.Intermediate,
-      Advanced: d.shares.Advanced,
-      Any: d.shares.Any
+      Advanced: d.shares.Advanced
     }))
     .sort((a, b) => b.Advanced - a.Advanced);
 
-  const margin = {top: 32, right: 24, bottom: 28, left: 150};
-  const rowH = 28;
-  const groupGap = 14;
+  const margin = {top: 34, right: 24, bottom: 28, left: 150};
+  const rowH = 30;
   const width = 860;
-  const innerW = width - margin.left - margin.right;
-  const height = margin.top + rows.length * (rowH * 3 + groupGap) + margin.bottom;
+  const height = margin.top + rows.length * rowH + margin.bottom;
 
   const svg = d3.create("svg")
     .attr("viewBox", [0, 0, width, height])
@@ -1591,20 +1665,8 @@ digitalData = FileAttachment("digital_skill_offer_shares.json").json()
     .style("height", "auto");
 
   const x = d3.scaleLinear()
-    .domain([0, d3.max(rows.flatMap(d => levelOrder.map(level => d[level]))) || 0.01])
-    .nice()
+    .domain([0, 1])
     .range([margin.left, width - margin.right]);
-
-  svg.append("g")
-    .attr("transform", `translate(0, ${margin.top - 8})`)
-    .call(
-      d3.axisTop(x)
-        .ticks(6)
-        .tickFormat(d3.format(".0%"))
-    )
-    .call(g => g.select(".domain").remove())
-    .call(g => g.selectAll(".tick line").attr("stroke", "#cbd5e1"))
-    .call(g => g.selectAll(".tick text").attr("fill", "#64748b"));
 
   const legend = svg.append("g")
     .attr("transform", `translate(${margin.left}, 14)`);
@@ -1626,43 +1688,40 @@ digitalData = FileAttachment("digital_skill_offer_shares.json").json()
   });
 
   rows.forEach((row, i) => {
-    const y0 = margin.top + i * (rowH * 3 + groupGap);
+    const y0 = margin.top + i * rowH;
 
     svg.append("text")
       .attr("x", margin.left - 12)
-      .attr("y", y0 + rowH * 1.5)
+      .attr("y", y0 + 17)
       .attr("text-anchor", "end")
       .attr("font-size", 12)
       .attr("font-weight", 700)
       .attr("fill", "#334155")
       .text(row.country);
 
+    let x0 = margin.left;
     levelOrder.forEach((level, j) => {
-      const y = y0 + j * rowH;
       const value = row[level];
+      const w = x(value) - x(0);
       svg.append("rect")
-        .attr("x", margin.left)
-        .attr("y", y + 5)
-        .attr("width", x(value) - margin.left)
-        .attr("height", 18)
+        .attr("x", x0)
+        .attr("y", y0 + 5)
+        .attr("width", w)
+        .attr("height", 20)
         .attr("rx", 6)
         .attr("fill", palette[level]);
 
-      svg.append("text")
-        .attr("x", margin.left + 6)
-        .attr("y", y + 18)
-        .attr("font-size", 11)
-        .attr("font-weight", 700)
-        .attr("fill", j === 0 ? "#1e3a8a" : "#ffffff")
-        .text(level);
-
-      svg.append("text")
-        .attr("x", x(value) + 8)
-        .attr("y", y + 18)
-        .attr("font-size", 11)
-        .attr("font-weight", 700)
-        .attr("fill", "#334155")
-        .text(d3.format(".1%")(value));
+      if (w > 54) {
+        svg.append("text")
+          .attr("x", x0 + w / 2)
+          .attr("y", y0 + 19)
+          .attr("text-anchor", "middle")
+          .attr("font-size", 11)
+          .attr("font-weight", 700)
+          .attr("fill", j === 0 ? "#1e3a8a" : "#ffffff")
+          .text(d3.format(".1%")(value));
+      }
+      x0 += w;
     });
   });
 
@@ -1671,10 +1730,141 @@ digitalData = FileAttachment("digital_skill_offer_shares.json").json()
 ```
 :::
 
+
+:::: {.section-card}
+### Country-specific digital skills and knowledge
+
+To identify digital skills and knowledge that are particularly
+characteristic of individual countries, we apply the log-likelihood
+ratio (`G²`) test following Dunning (1993), a method widely used in
+corpus-based analysis to compare term distributions across text
+collections. Here, the same logic is applied to extracted ESCO concepts:
+the test assesses whether specific digital skills or digital knowledge
+items occur in a given country’s job postings in a systematically
+different way than would be expected based on their distribution in the
+other analysed countries.
+
+For this section, **digital skills** are defined as ESCO concepts in the
+`S5` branch (`working with computers`), while **digital knowledge** is
+defined as ESCO’s ICT knowledge branch (`06*`). Higher `G²` values
+indicate concepts that are more distinctive for the selected country
+relative to the rest of the sample.
+
+```{ojs}
+//| echo: false
+
+digitalKeyness = FileAttachment("digital_keyness.json").json()
+
+{
+  const data = await digitalKeyness;
+  const countryOrder = [
+    "Japan",
+    "South Korea",
+    "Singapore",
+    "Taiwan",
+    "Malaysia",
+    "Thailand",
+    "Vietnam",
+    "Philippines",
+    "India",
+    "Mexico",
+    "Poland"
+  ].filter(country => data.countries[country]);
+
+  let selectedCountry = countryOrder[0];
+
+  const wrap = d3.create("div");
+  const controls = wrap.append("div").attr("class", "compare-controls");
+  const control = controls.append("div").attr("class", "compare-control");
+  control.append("label").text("Select country");
+  const buttonGroup = control.append("div").attr("class", "country-button-group");
+  wrap.append("div")
+    .attr("class", "compare-note")
+    .text("Tables are ranked by G². Only concepts with at least 3 mentions in the selected country and 10 mentions in the pooled sample are shown.");
+
+  const meta = wrap.append("div").attr("class", "keyness-meta");
+  const charts = wrap.append("div").attr("class", "compare-charts");
+
+  function renderTable(title, rows) {
+    const panel = charts.append("div");
+    panel.append("div")
+      .attr("class", "compare-panel-title")
+      .text(title);
+
+    const tableWrap = panel.append("div").attr("class", "keyness-table-wrap");
+    const table = tableWrap.append("table").attr("class", "table table-sm keyness-table");
+    const thead = table.append("thead").append("tr");
+    ["Concept", "Mentions", "Per 1k", "Rest of sample", "G²"].forEach(label => {
+      thead.append("th").text(label);
+    });
+
+    const tbody = table.append("tbody");
+    rows.forEach(row => {
+      const tr = tbody.append("tr");
+      const concept = tr.append("td");
+      concept.append("div")
+        .attr("style", "font-weight:700;color:#0f172a;")
+        .text(row.label);
+      concept.append("div")
+        .attr("class", "keyness-code")
+        .text(row.code);
+      tr.append("td").text(d3.format(",")(row.country_count));
+      tr.append("td").text(d3.format(".1f")(row.country_rate * 1000));
+      tr.append("td").text(d3.format(".1f")(row.other_rate * 1000));
+      tr.append("td").text(d3.format(".1f")(row.g2));
+    });
+
+    if (!rows.length) {
+      const tr = tbody.append("tr");
+      tr.append("td")
+        .attr("colspan", 5)
+        .attr("style", "color:#64748b;")
+        .text("No concepts meet the display threshold for this country.");
+    }
+  }
+
+  function render() {
+    const countryMeta = data.countries[selectedCountry];
+    meta.text(
+      `Selected country: ${selectedCountry}. Based on ${d3.format(",")(countryMeta.digital_skill_mentions)} digital skill mentions and ${d3.format(",")(countryMeta.digital_knowledge_mentions)} digital knowledge mentions.`
+    );
+
+    charts.selectAll("*").remove();
+    renderTable("Digital knowledge", data.knowledge[selectedCountry] || []);
+    renderTable("Digital skills", data.skills[selectedCountry] || []);
+  }
+
+  const buttons = buttonGroup.selectAll("button")
+    .data(countryOrder)
+    .join("button")
+      .attr("type", "button")
+      .attr("class", country => `country-pill${country === selectedCountry ? " active" : ""}`)
+      .text(country => country)
+      .on("click", function(event, country) {
+        selectedCountry = country;
+        buttons.attr("class", value => `country-pill${value === selectedCountry ? " active" : ""}`);
+        render();
+      });
+
+  render();
+  return wrap.node();
+}
+```
+::::
+
+
 ## References
 
 ::: {#refs}
 Decorte, J.-J., Van Hautte, J., Develder, C., & Demeester, T. (2025).
 Efficient Text Encoders for Labor Market Analysis.
 *IEEE Access*, 13, 133596–133608.
+
+Angel-Urdinola, D., Chinen, M. H., & Rodon Casarramona, G. (2025).
+Digital Skills Development: Competence Frameworks, Assessment Tools, and Pedagogical Approaches.
+*Education Notes*, (203091).
+
+Dunning, T. (1993).
+Accurate Methods for the Statistics of Surprise and Coincidence.
+*Computational Linguistics*, 19(1), 61-74.
 :::

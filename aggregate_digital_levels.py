@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-Aggregate offer shares with digital skills by level using the
+Aggregate digital skill composition by level using the
 "Digital skill classification_Chinen et al 2025.xlsx" taxonomy.
 
 Method:
 - map workbook ESCO labels -> comprehensive_esco.db codes/uris
 - ignore transversal and OTHER
-- classify offer as basic/intermediate/advanced if at least one mapped ESCO
-  skill of that level appears in the offer's *_esco.jsonl output
+- count ESCO-mapped digital skill mentions by level in each country's
+  *_esco.jsonl output
+- report the share of digital skill mentions that are basic,
+  intermediate, and advanced
 """
 
 from __future__ import annotations
@@ -95,34 +97,37 @@ def main():
         if key not in COUNTRY_LABELS:
             continue
 
-        totals = {"Basic": 0, "Intermediate": 0, "Advanced": 0, "Any": 0}
+        totals = {"Basic": 0, "Intermediate": 0, "Advanced": 0}
         offers = 0
 
         with open(path) as fh:
             for line in fh:
                 offers += 1
                 row = json.loads(line)
-                uris = {item.get("uri") for item in row.get("skills", []) if item.get("uri")}
+                for item in row.get("skills", []):
+                    uri = item.get("uri")
+                    if not uri:
+                        continue
+                    for level in ("Basic", "Intermediate", "Advanced"):
+                        if uri in level_sets[level]:
+                            totals[level] += 1
+                            break
 
-                offer_has_any = False
-                for level in ("Basic", "Intermediate", "Advanced"):
-                    if uris & level_sets[level]:
-                        totals[level] += 1
-                        offer_has_any = True
-                if offer_has_any:
-                    totals["Any"] += 1
+        digital_total = sum(totals.values())
 
         rows.append({
             "country": COUNTRY_LABELS[key],
             "offers": offers,
+            "digital_skill_mentions": digital_total,
+            "counts": totals,
             "shares": {
-                level: (totals[level] / offers) if offers else 0
-                for level in ("Any", "Basic", "Intermediate", "Advanced")
+                level: (totals[level] / digital_total) if digital_total else 0
+                for level in ("Basic", "Intermediate", "Advanced")
             }
         })
 
     payload = {
-        "levels": ["Any", "Basic", "Intermediate", "Advanced"],
+        "levels": ["Basic", "Intermediate", "Advanced"],
         "rows": rows,
         "matched_taxonomy_counts": {k: len(v) for k, v in level_sets.items()},
         "unmatched_taxonomy_labels": len(unmatched),

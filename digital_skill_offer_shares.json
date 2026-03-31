@@ -1,6 +1,5 @@
 {
   "levels": [
-    "Any",
     "Basic",
     "Intermediate",
     "Advanced"
@@ -9,111 +8,166 @@
     {
       "country": "India",
       "offers": 221614,
+      "digital_skill_mentions": 859592,
+      "counts": {
+        "Basic": 114610,
+        "Intermediate": 334727,
+        "Advanced": 410255
+      },
       "shares": {
-        "Any": 0.7477505933740648,
-        "Basic": 0.31851327082224046,
-        "Intermediate": 0.6436867706913824,
-        "Advanced": 0.5513505464456216
+        "Basic": 0.1333306964234195,
+        "Intermediate": 0.3894021815000605,
+        "Advanced": 0.47726712207652
       }
     },
     {
       "country": "Japan",
       "offers": 256421,
+      "digital_skill_mentions": 395624,
+      "counts": {
+        "Basic": 63011,
+        "Intermediate": 166570,
+        "Advanced": 166043
+      },
       "shares": {
-        "Any": 0.5774800035878497,
-        "Basic": 0.15167244492455767,
-        "Intermediate": 0.43650871028503907,
-        "Advanced": 0.3338611112194399
+        "Basic": 0.15926991284654116,
+        "Intermediate": 0.42103108001536815,
+        "Advanced": 0.4196990071380907
       }
     },
     {
       "country": "South Korea",
       "offers": 120559,
+      "digital_skill_mentions": 158725,
+      "counts": {
+        "Basic": 21771,
+        "Intermediate": 63318,
+        "Advanced": 73636
+      },
       "shares": {
-        "Any": 0.41006478155923654,
-        "Basic": 0.1242047462238406,
-        "Intermediate": 0.30685390555661546,
-        "Advanced": 0.27292031287585333
+        "Basic": 0.1371617577571271,
+        "Intermediate": 0.39891636478185544,
+        "Advanced": 0.4639218774610175
       }
     },
     {
       "country": "Malaysia",
       "offers": 171116,
+      "digital_skill_mentions": 429446,
+      "counts": {
+        "Basic": 79825,
+        "Intermediate": 190385,
+        "Advanced": 159236
+      },
       "shares": {
-        "Any": 0.6234893288763178,
-        "Basic": 0.2771102643820566,
-        "Intermediate": 0.5274842796699315,
-        "Advanced": 0.41899062624184763
+        "Basic": 0.18587901622089856,
+        "Intermediate": 0.44332698406784554,
+        "Advanced": 0.3707939997112559
       }
     },
     {
       "country": "Mexico",
       "offers": 198421,
+      "digital_skill_mentions": 371208,
+      "counts": {
+        "Basic": 63027,
+        "Intermediate": 156133,
+        "Advanced": 152048
+      },
       "shares": {
-        "Any": 0.630840485634081,
-        "Basic": 0.2232828178469013,
-        "Intermediate": 0.4978807686686389,
-        "Advanced": 0.3872321982048271
+        "Basic": 0.1697889054115213,
+        "Intermediate": 0.42060785327902417,
+        "Advanced": 0.4096032413094545
       }
     },
     {
       "country": "Philippines",
       "offers": 187085,
+      "digital_skill_mentions": 586284,
+      "counts": {
+        "Basic": 106193,
+        "Intermediate": 262362,
+        "Advanced": 217729
+      },
       "shares": {
-        "Any": 0.7569393591148409,
-        "Basic": 0.34878798407141137,
-        "Intermediate": 0.621562391426357,
-        "Advanced": 0.5297271293796937
+        "Basic": 0.18112894092282922,
+        "Intermediate": 0.44749984649077923,
+        "Advanced": 0.37137121258639155
       }
     },
     {
       "country": "Poland",
       "offers": 125050,
+      "digital_skill_mentions": 540074,
+      "counts": {
+        "Basic": 60965,
+        "Intermediate": 189008,
+        "Advanced": 290101
+      },
       "shares": {
-        "Any": 0.8597441023590564,
-        "Basic": 0.3376969212315074,
-        "Intermediate": 0.7585605757696922,
-        "Advanced": 0.6579448220711716
+        "Basic": 0.11288267904027967,
+        "Intermediate": 0.34996685639375347,
+        "Advanced": 0.5371504645659669
       }
     },
     {
       "country": "Singapore",
       "offers": 118980,
+      "digital_skill_mentions": 517555,
+      "counts": {
+        "Basic": 53218,
+        "Intermediate": 177383,
+        "Advanced": 286954
+      },
       "shares": {
-        "Any": 0.7837535720289124,
-        "Basic": 0.28724995797613045,
-        "Intermediate": 0.6749873928391327,
-        "Advanced": 0.629761304420911
+        "Basic": 0.10282578663137251,
+        "Intermediate": 0.34273265643264966,
+        "Advanced": 0.5544415569359779
       }
     },
     {
       "country": "Thailand",
       "offers": 57688,
+      "digital_skill_mentions": 102142,
+      "counts": {
+        "Basic": 18468,
+        "Intermediate": 42689,
+        "Advanced": 40985
+      },
       "shares": {
-        "Any": 0.4784530578283179,
-        "Basic": 0.19952156427679935,
-        "Intermediate": 0.390843849674109,
-        "Advanced": 0.3158542504507003
+        "Basic": 0.18080711166806995,
+        "Intermediate": 0.417937772904388,
+        "Advanced": 0.40125511542754205
       }
     },
     {
       "country": "Taiwan",
       "offers": 54653,
+      "digital_skill_mentions": 172368,
+      "counts": {
+        "Basic": 32948,
+        "Intermediate": 53193,
+        "Advanced": 86227
+      },
       "shares": {
-        "Any": 0.6282180301172854,
-        "Basic": 0.32042156880683587,
-        "Intermediate": 0.5075110240974878,
-        "Advanced": 0.5040162479644301
+        "Basic": 0.19114916921934466,
+        "Intermediate": 0.30860136452241715,
+        "Advanced": 0.5002494662582382
       }
     },
     {
       "country": "Vietnam",
       "offers": 145366,
+      "digital_skill_mentions": 625232,
+      "counts": {
+        "Basic": 102214,
+        "Intermediate": 227117,
+        "Advanced": 295901
+      },
       "shares": {
-        "Any": 0.8409875761870038,
-        "Basic": 0.427197556512527,
-        "Intermediate": 0.7310375190897459,
-        "Advanced": 0.6192782356259373
+        "Basic": 0.16348171558717403,
+        "Intermediate": 0.3632523607236994,
+        "Advanced": 0.4732659236891266
       }
     }
   ],
