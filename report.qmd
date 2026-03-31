@@ -433,10 +433,14 @@ include-in-header:
       }
 
       .compare-controls {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(180px, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 0.8rem;
         margin: 0.3rem 0 1rem 0;
+      }
+
+      .compare-control {
+        min-width: 100%;
       }
 
       .compare-control label {
@@ -449,14 +453,51 @@ include-in-header:
         margin-bottom: 0.35rem;
       }
 
-      .compare-control select {
-        width: 100%;
+      .country-button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+      }
+
+      .country-pill {
         border: 1px solid #dbe3f0;
-        border-radius: 10px;
-        padding: 0.55rem 0.7rem;
-        background: #fff;
+        background: #ffffff;
         color: var(--ink-strong);
-        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+        border-radius: 999px;
+        padding: 0.5rem 0.8rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        line-height: 1;
+        cursor: pointer;
+        transition: background 140ms ease, color 140ms ease, border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      }
+
+      .country-pill:hover,
+      .country-pill:focus {
+        transform: translateY(-1px);
+        border-color: #bfd2ea;
+      }
+
+      .country-pill.active {
+        background: #eff6ff;
+        border-color: #93c5fd;
+        color: #1d4ed8;
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.12);
+      }
+
+      .country-pill.disabled {
+        background: #f8fafc;
+        color: #94a3b8;
+        border-color: #e2e8f0;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .compare-helper {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        margin-top: 0.35rem;
       }
 
       .compare-note {
@@ -480,7 +521,7 @@ include-in-header:
           width: 100%;
         }
         .compare-controls {
-          grid-template-columns: 1fr;
+          gap: 0.6rem;
         }
       }
 
@@ -1320,29 +1361,37 @@ categoryData = FileAttachment("esco_category_shares.json").json()
 {
   const data = await categoryData;
   const countries = data.country_order;
-  const defaultSelection = ["Japan", "Singapore", "Vietnam"];
+  const countryButtons = [
+    { key: "India", label: "India", enabled: true },
+    { key: "Japan", label: "Japan", enabled: true },
+    { key: "South Korea", label: "South Korea", enabled: true },
+    { key: "Malaysia", label: "Malaysia", enabled: true },
+    { key: "Philippines", label: "Philippines", enabled: true },
+    { key: "Singapore", label: "Singapore", enabled: true },
+    { key: "Thailand", label: "Thailand", enabled: true },
+    { key: "Taiwan", label: "Taiwan", enabled: true },
+    { key: "Vietnam", label: "Vietnam", enabled: true },
+    { key: "Mexico", label: "Mexico", enabled: true },
+    { key: "Poland", label: "Poland", enabled: true },
+    { key: "Indonesia", label: "Indonesia", enabled: false },
+    { key: "Chile", label: "Chile", enabled: false },
+  ];
+  let selectedCountries = ["Japan", "Singapore", "Vietnam", "India", "Poland"];
   const skillCodes = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"];
 
   const wrap = d3.create("div");
 
   const controls = wrap.append("div").attr("class", "compare-controls");
-
-  const selectors = defaultSelection.map((selectedCountry, i) => {
-    const box = controls.append("div").attr("class", "compare-control");
-    box.append("label").attr("for", `compare-country-${i}`).text(`Country ${i + 1}`);
-    const select = box.append("select").attr("id", `compare-country-${i}`);
-    countries.forEach(country => {
-      select.append("option")
-        .attr("value", country)
-        .property("selected", country === selectedCountry)
-        .text(country);
-    });
-    return select.node();
-  });
+  const box = controls.append("div").attr("class", "compare-control");
+  box.append("label").text("Select up to 5 countries");
+  const buttonGroup = box.append("div").attr("class", "country-button-group");
+  const helper = box.append("div")
+    .attr("class", "compare-helper")
+    .text("Indonesia and Chile remain disabled until ESCO-mapped outputs are available.");
 
   wrap.append("div")
     .attr("class", "compare-note")
-    .text("Each cell shows the category share within the selected country. Use the dropdowns to compare a different set of three countries.");
+    .text("Each cell shows the category share within the selected country. You can compare up to five countries at once.");
 
   const chartHost = wrap.append("div").attr("class", "compare-charts");
 
@@ -1386,12 +1435,21 @@ categoryData = FileAttachment("esco_category_shares.json").json()
     rows.forEach((row, r) => {
       const y = margin.top + r * cellH;
 
-      svg.append("text")
+      const rowLabel = svg.append("text")
         .attr("x", margin.left - 10)
         .attr("y", y + cellH / 2 + 4)
         .attr("text-anchor", "end")
-        .attr("font-size", 12)
+        .attr("font-size", 12);
+
+      rowLabel.append("tspan")
+        .attr("fill", "#94a3b8")
+        .attr("font-weight", 600)
+        .text(`${row.code} `);
+
+      rowLabel.append("tspan")
         .attr("fill", "#334155")
+        .attr("font-weight", 700)
+        .attr("text-decoration", "underline")
         .text(row.label);
 
       selected.forEach((country, c) => {
@@ -1420,18 +1478,20 @@ categoryData = FileAttachment("esco_category_shares.json").json()
   }
 
   function render() {
-    const selected = selectors.map(s => s.value);
+    const selected = selectedCountries;
     chartHost.selectAll("*").remove();
+    helper.text(`${selected.length}/5 selected. Indonesia and Chile remain disabled until ESCO-mapped outputs are available.`);
 
     const skillRows = skillCodes.map(code => ({
-      label: `${code}  ${shortLabel(data.skill_meta[code] || code, 38)}`,
+      code,
+      label: shortLabel(data.skill_meta[code] || code, 38),
       values: Object.fromEntries(selected.map(country => [country, data.countries[country]?.skill_shares?.[code] || 0]))
     }));
 
     const knowledgeRows = [...data.top_knowledge_codes]
       .map(code => ({
         code,
-        label: `${code}  ${shortLabel(data.knowledge_meta[code] || code, 42)}`,
+        label: shortLabel(data.knowledge_meta[code] || code, 42),
         values: Object.fromEntries(selected.map(country => [country, data.countries[country]?.knowledge_shares?.[code] || 0]))
       }))
       .sort((a, b) =>
@@ -1454,7 +1514,27 @@ categoryData = FileAttachment("esco_category_shares.json").json()
     }));
   }
 
-  selectors.forEach(select => select.addEventListener("change", render));
+  const buttons = buttonGroup.selectAll("button")
+    .data(countryButtons)
+    .join("button")
+      .attr("type", "button")
+      .attr("class", d => `country-pill${d.enabled ? "" : " disabled"}${selectedCountries.includes(d.key) ? " active" : ""}`)
+      .property("disabled", d => !d.enabled)
+      .text(d => d.label)
+      .on("click", function(event, d) {
+        if (!d.enabled) return;
+        const isSelected = selectedCountries.includes(d.key);
+        if (isSelected) {
+          if (selectedCountries.length === 1) return;
+          selectedCountries = selectedCountries.filter(v => v !== d.key);
+        } else {
+          if (selectedCountries.length >= 5) return;
+          selectedCountries = [...selectedCountries, d.key];
+        }
+        buttons.attr("class", btn => `country-pill${btn.enabled ? "" : " disabled"}${selectedCountries.includes(btn.key) ? " active" : ""}`);
+        render();
+      });
+
   render();
 
   return wrap.node();
